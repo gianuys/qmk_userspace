@@ -40,6 +40,10 @@ enum custom_keycodes {
     OS_LEND, // End of line:     Cmd+Right   / End
     OS_TOP,  // Top of doc:      Cmd+Up      / Ctrl+Home
     OS_BOTM, // Bottom of doc:   Cmd+Down    / Ctrl+End
+    OS_ARRL, // Arrow left:      Opt+Left    / Ctrl+Left
+    OS_ARRR, // Arrow right:     Opt+Right   / Ctrl+Right
+    OS_ARRD, // Arrow down:      Opt+Down    / Ctrl+Down
+    OS_ARRU, // Arrow up:        Opt+Up      / Ctrl+Up
 };
 /** \brief Automatically enable sniping-mode on the pointer layer. */
 #define CHARYBDIS_AUTO_SNIPING_ON_LAYER LAYER_POINTER
@@ -106,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        KC_MNXT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_VOLU,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       KC_MPLY, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,    KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, XXXXXXX, KC_MUTE,
+       KC_MPLY, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,    OS_ARRL, OS_ARRR, OS_ARRD, OS_ARRU, XXXXXXX, KC_MUTE,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        KC_MPRV, KC_HOME, KC_PGUP, KC_PGDN,  KC_END, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_VOLD,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
@@ -196,6 +200,10 @@ static const uint16_t os_shortcuts[][2] = {
     [OS_LEND - OS_UNDO] = {G(KC_RGHT), KC_END},
     [OS_TOP - OS_UNDO]  = {G(KC_UP), C(KC_HOME)},
     [OS_BOTM - OS_UNDO] = {G(KC_DOWN), C(KC_END)},
+    [OS_ARRL - OS_UNDO] = {A(KC_LEFT), C(KC_LEFT)},
+    [OS_ARRR - OS_UNDO] = {A(KC_RGHT), C(KC_RGHT)},
+    [OS_ARRD - OS_UNDO] = {A(KC_DOWN), C(KC_DOWN)},
+    [OS_ARRU - OS_UNDO] = {A(KC_UP), C(KC_UP)},
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -233,7 +241,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false; // Handled
         }
-        case OS_UNDO ... OS_BOTM: {
+        case OS_UNDO ... OS_ARRU: {
             uint8_t idx = keycode - OS_UNDO;
             if (record->event.pressed) {
                 active_shortcuts[idx] = os_shortcuts[idx][is_mac() ? 0 : 1];
