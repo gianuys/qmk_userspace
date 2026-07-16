@@ -26,7 +26,21 @@ enum charybdis_keymap_layers {
     LAYER_RAISE,
     LAYER_POINTER,
 };
-
+enum custom_keycodes {
+    CMDALT = SAFE_RANGE,
+    OPTWIN,
+    OS_UNDO, // Undo:            Cmd+Z       / Ctrl+Z
+    OS_REDO, // Redo:            Cmd+Shift+Z / Ctrl+Shift+Z
+    OS_CUT,  // Cut:             Cmd+X       / Ctrl+X
+    OS_COPY, // Copy:            Cmd+C       / Ctrl+C
+    OS_PSTE, // Paste:           Cmd+V       / Ctrl+V
+    OS_WRDL, // Word left:       Alt+Left    / Ctrl+Left
+    OS_WRDR, // Word right:      Alt+Right   / Ctrl+Right
+    OS_LSTR, // Start of line:   Cmd+Left    / Home
+    OS_LEND, // End of line:     Cmd+Right   / End
+    OS_TOP,  // Top of doc:      Cmd+Up      / Ctrl+Home
+    OS_BOTM, // Bottom of doc:   Cmd+Down    / Ctrl+End
+};
 /** \brief Automatically enable sniping-mode on the pointer layer. */
 #define CHARYBDIS_AUTO_SNIPING_ON_LAYER LAYER_POINTER
 
@@ -62,27 +76,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
         KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSLS,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
+       LSFT_T(KC_CAPS),    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       KC_LCTL,    PT_Z,    KC_X,    KC_C,    KC_V,    KC_M,       KC_N,    KC_M, KC_COMM,  KC_DOT, PT_SLSH, KC_LALT,
+       KC_GRAVE,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, PT_SLSH, KC_LALT,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
-                                   KC_LGUI, KC_ENT,   LOWER,      RAISE,  KC_SPC,
-                                           KC_LALT, KC_BSPC,     KC_DEL
+                                   KC_LCTL, KC_ENT,   LOWER,      RAISE,  KC_SPC,
+                                            CMDALT, KC_BSPC,     OPTWIN
   //                            ╰───────────────────────────╯ ╰──────────────────╯
   ),
 
   [LAYER_LOWER] = LAYOUT(
   // ╭──────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
-       KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,    KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS,
+       KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,    KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_EQL,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       RGB_MOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    KC_LBRC,   KC_P7,   KC_P8,   KC_P9, KC_RBRC, XXXXXXX,
+       RGB_MOD, XXXXXXX, OS_WRDR, XXXXXXX, OS_REDO,  OS_TOP,    KC_LBRC, OS_LSTR,   KC_P8, KC_LBRC, KC_RBRC, XXXXXXX,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       RGB_TOG, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX,    KC_PPLS,   KC_P4,   KC_P5,   KC_P6, KC_PMNS, KC_PEQL,
+       KC_LSFT, OS_LEND, XXXXXXX, KC_PGDN, XXXXXXX, OS_BOTM,    KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, KC_PMNS, KC_PEQL,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-      RGB_RMOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    KC_PAST,   KC_P1,   KC_P2,   KC_P3, KC_PSLS, KC_PDOT,
+      KC_TILDE, OS_UNDO,  OS_CUT, OS_COPY, OS_PSTE, OS_WRDL,    KC_PAST,   KC_P1,   KC_P2,   KC_P3, KC_PSLS, KC_PDOT,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
-                                  XXXXXXX, XXXXXXX, _______,    XXXXXXX, _______,
-                                           XXXXXXX, XXXXXXX,      KC_P0
+                                  KC_LCTL,  KC_ENT, _______,    XXXXXXX, _______,
+                                            CMDALT, XXXXXXX,      KC_P0
   //                            ╰───────────────────────────╯ ╰──────────────────╯
   ),
 
@@ -92,12 +106,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        KC_MNXT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_VOLU,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       KC_MPLY, KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, XXXXXXX,    XXXXXXX, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, KC_MUTE,
+       KC_MPLY, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,    KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, XXXXXXX, KC_MUTE,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        KC_MPRV, KC_HOME, KC_PGUP, KC_PGDN,  KC_END, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_VOLD,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
                                   _______, _______, XXXXXXX,    _______, XXXXXXX,
-                                           _______, _______,    XXXXXXX
+                                           _______,  KC_DEL,    XXXXXXX
   //                            ╰───────────────────────────╯ ╰──────────────────╯
   ),
 
@@ -105,11 +119,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ╭──────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
        QK_BOOT,  EE_CLR, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, QK_BOOT,  EE_CLR,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DPI_MOD, S_D_MOD,    S_D_MOD, DPI_MOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+       RGB_MOD, XXXXXXX, XXXXXXX, XXXXXXX, DPI_MOD, S_D_MOD,    S_D_MOD, DPI_MOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       XXXXXXX, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX,    XXXXXXX, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,
+       RGB_TOG, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX,    XXXXXXX, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       XXXXXXX, _______, DRGSCRL, SNIPING, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, SNIPING, DRGSCRL, _______, XXXXXXX,
+      RGB_RMOD, _______, DRGSCRL, SNIPING, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, SNIPING, DRGSCRL, _______, XXXXXXX,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
                                   KC_BTN2, KC_BTN1, KC_BTN3,    KC_BTN3, KC_BTN1,
                                            XXXXXXX, KC_BTN2,    KC_BTN2
@@ -157,3 +171,81 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 // Forward-declare this helper function since it is defined in rgb_matrix.c.
 void rgb_matrix_update_pwm_buffers(void);
 #endif
+
+static bool is_mac(void) {
+    switch (detected_host_os()) {
+        case OS_MACOS:
+        case OS_IOS:
+            return true;
+        default:
+            return false;
+    }
+}
+
+/** \brief OS-aware shortcut table, indexed by `keycode - OS_UNDO`. */
+static const uint16_t os_shortcuts[][2] = {
+    //             {macOS,          other}
+    [OS_UNDO - OS_UNDO] = {G(KC_Z), C(KC_Z)},
+    [OS_REDO - OS_UNDO] = {S(G(KC_Z)), S(C(KC_Z))},
+    [OS_CUT - OS_UNDO]  = {G(KC_X), C(KC_X)},
+    [OS_COPY - OS_UNDO] = {G(KC_C), C(KC_C)},
+    [OS_PSTE - OS_UNDO] = {G(KC_V), C(KC_V)},
+    [OS_WRDL - OS_UNDO] = {A(KC_LEFT), C(KC_LEFT)},
+    [OS_WRDR - OS_UNDO] = {A(KC_RGHT), C(KC_RGHT)},
+    [OS_LSTR - OS_UNDO] = {G(KC_LEFT), KC_HOME},
+    [OS_LEND - OS_UNDO] = {G(KC_RGHT), KC_END},
+    [OS_TOP - OS_UNDO]  = {G(KC_UP), C(KC_HOME)},
+    [OS_BOTM - OS_UNDO] = {G(KC_DOWN), C(KC_END)},
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    static uint16_t active_shortcuts[ARRAY_SIZE(os_shortcuts)] = {0};
+    static uint16_t cmdalt_key = KC_LALT; // Default to 'Q'
+    static uint16_t active_keycode = KC_LWIN; // Default to 'Q'
+    switch (keycode) {
+        case CMDALT: {
+            #if defined(OS_DETECTION_ENABLE)
+            os_variant_t host = detected_host_os();
+            if (host == OS_MACOS || host == OS_IOS) {
+                cmdalt_key = KC_LCMD; // Swap to 'D' on Mac
+            }
+            #endif
+
+            if (record->event.pressed) {
+                register_code16(cmdalt_key);
+            } else {
+                unregister_code16(cmdalt_key);
+            }
+            return false; // Handled
+        }
+        case OPTWIN: {
+            #if defined(OS_DETECTION_ENABLE)
+            os_variant_t host = detected_host_os();
+            if (host == OS_MACOS || host == OS_IOS) {
+                active_keycode = KC_LOPT; // Swap to 'D' on Mac
+            }
+            #endif
+
+            if (record->event.pressed) {
+                register_code16(active_keycode);
+            } else {
+                unregister_code16(active_keycode);
+            }
+            return false; // Handled
+        }
+        case OS_UNDO ... OS_BOTM: {
+            uint8_t idx = keycode - OS_UNDO;
+            if (record->event.pressed) {
+                active_shortcuts[idx] = os_shortcuts[idx][is_mac() ? 0 : 1];
+                register_code16(active_shortcuts[idx]);
+            } else if (active_shortcuts[idx]) {
+                unregister_code16(active_shortcuts[idx]);
+                active_shortcuts[idx] = 0;
+            }
+            return false;
+        }
+        default:
+            return true; // Let QMK handle everything else normally
+    }
+}
+
