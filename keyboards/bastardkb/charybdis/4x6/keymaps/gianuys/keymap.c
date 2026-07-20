@@ -29,6 +29,7 @@ enum charybdis_keymap_layers {
 enum custom_keycodes {
     CMDALT = SAFE_RANGE,
     OPTWIN,
+    CMDALT_GRVE,
     OS_UNDO, // Undo:            Cmd+Z       / Ctrl+Z
     OS_REDO, // Redo:            Cmd+Shift+Z / Ctrl+Shift+Z
     OS_CUT,  // Cut:             Cmd+X       / Ctrl+X
@@ -79,8 +80,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ╭───────────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
     KC_ESC        ,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,       KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS,
     KC_TAB        ,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSLS,
-   LSFT_T(KC_CAPS),    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
-   KC_GRAVE       ,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, PT_SLSH, KC_LCTL,
+   LSFT_T(KC_CAPS),    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, LSFT_T(KC_QUOT),
+   CMDALT_GRVE    ,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, PT_SLSH, KC_LCTL,
        // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
                                    KC_LCTL, KC_ENT,   LOWER,      RAISE,  KC_SPC,
                                             CMDALT, KC_BSPC,     OPTWIN
@@ -119,16 +120,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [LAYER_POINTER] = LAYOUT(
   // ╭──────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
-       QK_BOOT,  EE_CLR, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, QK_BOOT,  EE_CLR,
+       QK_BOOT,  EE_CLR, XXXXXXX, RGB_MOD, RGB_TOG,RGB_RMOD,    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, QK_BOOT,  EE_CLR,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       RGB_MOD, XXXXXXX, XXXXXXX, XXXXXXX, DPI_MOD, S_D_MOD,    S_D_MOD, DPI_MOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DPI_MOD, S_D_MOD,    S_D_MOD, DPI_MOD, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       RGB_TOG, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX,    XXXXXXX, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,
+       _______, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX,    XXXXXXX, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-      RGB_RMOD, _______, DRGSCRL, SNIPING, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, SNIPING, DRGSCRL, _______, XXXXXXX,
+       XXXXXXX, _______, DRGSCRL, SNIPING, XXXXXXX, XXXXXXX,    KC_BTN2, KC_BTN1, SNIPING, DRGSCRL, _______, XXXXXXX,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
-                                  KC_BTN2, KC_BTN1, KC_BTN3,    KC_BTN3, KC_BTN1,
-                                           XXXXXXX, KC_BTN2,    KC_BTN2
+                                  _______, KC_BTN1, KC_BTN3,    KC_BTN3, XXXXXXX,
+                                           XXXXXXX, KC_BTN2,    XXXXXXX
   //                            ╰───────────────────────────╯ ╰──────────────────╯
   ),
 };
@@ -239,6 +240,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code16(active_keycode);
             }
             return false; // Handled
+        }
+        case CMDALT_GRVE: {
+            static uint16_t press_timer = 0;
+
+            if (is_mac()) {
+                cmdalt_key = KC_LCMD;
+            }
+
+            if (record->event.pressed) {
+                press_timer = timer_read();
+                register_code16(cmdalt_key);
+            } else {
+                unregister_code16(cmdalt_key);
+                // If released before TAPPING_TERM, it was a tap
+                if (timer_elapsed(press_timer) < TAPPING_TERM) {
+                    tap_code16(KC_GRAVE);
+                }
+            }
+            return false;
         }
         case OS_UNDO ... OS_ARRU: {
             uint8_t idx = keycode - OS_UNDO;
