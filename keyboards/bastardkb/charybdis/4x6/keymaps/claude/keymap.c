@@ -40,8 +40,9 @@ enum charybdis_keymap_layers {
     LAYER_POINTER,
 };
 
-/** \brief Automatically enable sniping-mode on the pointer layer. */
-#define CHARYBDIS_AUTO_SNIPING_ON_LAYER LAYER_POINTER
+// Sniping is NOT auto-enabled on the pointer layer so you get full DPI by
+// default (useful for drag-scroll and 3D work). Press SNIPING to toggle it
+// when you need precision.
 
 enum custom_keycodes {
     OS_MOD = SAFE_RANGE, // Held: Cmd on macOS, Ctrl elsewhere.
@@ -208,9 +209,4 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-#if defined(POINTING_DEVICE_ENABLE) && defined(CHARYBDIS_AUTO_SNIPING_ON_LAYER)
-layer_state_t layer_state_set_user(layer_state_t state) {
-    charybdis_set_pointer_sniping_enabled(layer_state_cmp(state, CHARYBDIS_AUTO_SNIPING_ON_LAYER));
-    return state;
-}
-#endif // POINTING_DEVICE_ENABLE && CHARYBDIS_AUTO_SNIPING_ON_LAYER
+
