@@ -30,6 +30,7 @@ enum custom_keycodes {
     CMDALT = SAFE_RANGE,
     OPTWIN,
     CMDALT_GRVE,
+    OS_CMDT, // Open new tab, paste and enter:
     OS_UNDO, // Undo:            Cmd+Z       / Ctrl+Z
     OS_REDO, // Redo:            Cmd+Shift+Z / Ctrl+Shift+Z
     OS_CUT,  // Cut:             Cmd+X       / Ctrl+X
@@ -81,11 +82,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ╭───────────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
     KC_ESC        ,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,       KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS,
     KC_TAB        ,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSLS,
-   LSFT_T(KC_CAPS),    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, LSFT_T(KC_QUOT),
+    KC_LSFT       ,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, LSFT_T(KC_QUOT),
    CMDALT_GRVE    ,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, PT_SLSH, KC_LCTL,
        // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
-                                   KC_LCTL, KC_ENT,   LOWER,      RAISE,  KC_SPC,
-                                            CMDALT, KC_BSPC,     OPTWIN
+                      KC_LCTL, KC_ENT, LT(LAYER_LOWER, KC_BSPC),      RAISE,  KC_SPC,
+                                                CMDALT, KC_BSPC,      OPTWIN
   //                            ╰───────────────────────────╯ ╰──────────────────╯
   ),
 
@@ -108,11 +109,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ╭──────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
         KC_F12,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,      KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       KC_MNXT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX, XXXXXXX, XXXXXXX, KC_LBRC, KC_RBRC, KC_VOLU,
+       KC_MNXT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX, KC_LCBR, KC_RCBR, KC_LBRC, KC_RBRC, KC_VOLU,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        KC_LSFT,  KC_END, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,    KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, XXXXXXX, KC_MUTE,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       KC_MPRV, XXXXXXX, KC_PGUP, KC_PGDN,  KC_END, XXXXXXX,    XXXXXXX, XXXXXXX, KC_MNXT, KC_MPLY, KC_MPRV, KC_VOLD,
+       KC_CAPS, KC_TILD, KC_PGUP, KC_PGDN,  KC_END, XXXXXXX,    XXXXXXX, XXXXXXX, KC_MNXT, KC_MPLY, KC_MPRV, KC_VOLD,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
                                   _______, _______, XXXXXXX,    _______, XXXXXXX,
                                            _______,  KC_DEL,    XXXXXXX
@@ -127,9 +128,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        _______, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, XXXXXXX,    XXXXXXX, KC_RSFT, KC_RCTL, KC_RALT, KC_RGUI, XXXXXXX,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       XXXXXXX, _______, DRGSCRL, SNIPING, XXXXXXX, XXXXXXX,    KC_BTN2, KC_BTN1, SNIPING, DRGSCRL, _______, XXXXXXX,
+       XXXXXXX, _______, DRGSCRL, SNIPING, XXXXXXX, XXXXXXX,    KC_BTN3, KC_BTN1, SNIPING, DRGSCRL, _______, XXXXXXX,
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
-                                  _______, KC_BTN1, KC_BTN3,    KC_BTN3, XXXXXXX,
+                                  _______, KC_BTN1, KC_BTN3,    KC_BTN2, OS_CMDT,
                                            XXXXXXX, KC_BTN2,    XXXXXXX
   //                            ╰───────────────────────────╯ ╰──────────────────╯
   ),
@@ -256,7 +257,46 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
         }
-        case OS_UNDO ... OS_ARRU: {
+        case OS_CMDT: {
+            if (record->event.pressed) {
+                if (is_mac()) {
+                    register_code(KC_LCMD);
+                } else {
+                    register_code(KC_LEFT_CTRL);
+                }
+                tap_code16(KC_C);
+                if (is_mac()) {
+                    unregister_code(KC_LCMD);
+                } else {
+                    unregister_code(KC_LEFT_CTRL);
+                }
+                if (is_mac()) {
+                    register_code(KC_LCMD);
+                } else {
+                    register_code(KC_LALT);
+                }
+                // wait_ms(5);
+                tap_code16(KC_T);
+                if (is_mac()) {
+                    unregister_code(KC_LCMD);
+                } else {
+                    unregister_code(KC_LALT);
+                }
+                if (is_mac()) {
+                    register_code(KC_LCMD);
+                } else {
+                    register_code(KC_LEFT_CTRL);
+                }
+                tap_code16(KC_V);
+                if (is_mac()) {
+                    unregister_code(KC_LCMD);
+                } else {
+                    unregister_code(KC_LEFT_CTRL);
+                }
+                tap_code16(KC_ENTER);
+            }
+            return false;
+        } case OS_UNDO ... OS_ARRU: {
             uint8_t idx = keycode - OS_UNDO;
             if (record->event.pressed) {
                 active_shortcuts[idx] = os_shortcuts[idx][is_mac() ? 0 : 1];
