@@ -16,6 +16,8 @@
  */
 #pragma once
 
+#define AUTO_SHIFT_TIMEOUT 150
+
 #ifdef VIA_ENABLE
 /* VIA configuration. */
 #    define DYNAMIC_KEYMAP_LAYER_COUNT 4
